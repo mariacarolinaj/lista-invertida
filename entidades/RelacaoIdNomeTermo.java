@@ -13,8 +13,18 @@ public class RelacaoIdNomeTermo implements Registro {
     // registro que possui a continuação da listagem dos ids de nomes que possuem o
     // termo indicado; -1 indica que NÃO existe uma continuação do arquivo.
 
+    public RelacaoIdNomeTermo() {
+    }
+
     public RelacaoIdNomeTermo(int id, int idTermo, int qtdTermos, int[] idsNomesOcorrencias) {
         this.setId(id);
+        this.setIdTermo(idTermo);
+        this.setQtdTermos(qtdTermos);
+        this.setIdsNomesOcorrencias(idsNomesOcorrencias);
+        this.setProximo(-1);
+    }
+
+    public RelacaoIdNomeTermo(int idTermo, int qtdTermos, int[] idsNomesOcorrencias) {
         this.setIdTermo(idTermo);
         this.setQtdTermos(qtdTermos);
         this.setIdsNomesOcorrencias(idsNomesOcorrencias);

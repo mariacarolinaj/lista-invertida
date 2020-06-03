@@ -7,8 +7,15 @@ public class Termo implements Registro {
     private int id;
     private String termo;
 
+    public Termo() {
+    }
+
     public Termo(int id, String termo) {
         this.id = id;
+        this.termo = termo;
+    }
+
+    public Termo(String termo) {
         this.termo = termo;
     }
 

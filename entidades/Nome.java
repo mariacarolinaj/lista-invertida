@@ -12,6 +12,13 @@ public class Nome implements Registro {
         this.setNome(nome);
     }
 
+    public Nome() {
+    }
+
+    public Nome(String nome) {
+        this.setNome(nome);
+    }
+
     public String getNome() {
         return nome;
     }
