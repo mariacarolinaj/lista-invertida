@@ -1,6 +1,5 @@
 package cruds;
 
-import java.io.*;
 import java.text.Normalizer;
 
 import entidades.Nome;
@@ -9,11 +8,6 @@ import entidades.Termo;
 import util.Util;
 
 public class CrudTermo {
-
-    private static InputStream is = System.in;
-    private static InputStreamReader isr = new InputStreamReader(is);
-    private static BufferedReader br = new BufferedReader(isr);
-
     private static Arquivo<Termo> arquivoTermos;
     private static Arquivo<RelacaoIdNomeTermo> arquivoRelacaoIdNomesETermos;
 
@@ -80,6 +74,7 @@ public class CrudTermo {
                 }
             }
         } catch (Exception e) {
+            System.out.println("Problema em: CrudTermo");
             Util.mensagemErroCadastro();
         }
     }

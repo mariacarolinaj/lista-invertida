@@ -135,7 +135,9 @@ public class RelacaoIdNomeTermo implements Registro {
         int[] idsSegregadosInt = new int[idsSegregadosString.length];
 
         for (int i = 0; i < idsSegregadosString.length; i++) {
-            idsSegregadosInt[i] = Integer.parseInt(idsSegregadosString[i]);
+            if (!idsSegregadosString[i].isEmpty()) {
+                idsSegregadosInt[i] = Integer.parseInt(idsSegregadosString[i]);
+            }
         }
 
         return idsSegregadosInt;

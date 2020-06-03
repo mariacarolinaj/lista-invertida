@@ -15,8 +15,8 @@ public class CrudNome {
 
     private static CrudTermo crudTermo;
 
-    public CrudNome(CrudTermo ct) {
-        crudTermo = ct;
+    public CrudNome() {
+        crudTermo = new CrudTermo();
         this.inicializarBaseDados();
     }
 
@@ -56,7 +56,7 @@ public class CrudNome {
                     objetoNome.setId(idInserido);
 
                     crudTermo.incluirTermos(objetoNome);
-                    
+
                     Util.mensagemSucessoCadastro();
                 } catch (Exception e) {
                     Util.mensagemErroCadastro();
@@ -69,10 +69,11 @@ public class CrudNome {
 
     public void listarNomes() throws IOException {
         try {
-            Nome[] nomes = (Nome[]) arquivoNomes.listar();
+            Object[] nomes = arquivoNomes.listar();
             System.out.println("*.*.*.*.*.* Listagem de Nomes *.*.*.*.*.*\n");
             for (int i = 0; i < nomes.length; i++) {
-                System.out.println((i + 1) + ". " + nomes[i].getNome() + " - Id: " + nomes[i].getId());
+                Nome nome = (Nome) nomes[i];
+                System.out.println((i + 1) + ". " + nome.getNome() + " - id: " + nome.getId());
             }
         } catch (Exception e) {
             System.out.println("Ocorreu um erro ao acessar a base de dados. Tente novamente.");
