@@ -16,6 +16,12 @@ public class RelacaoIdNomeTermo implements Registro {
     public RelacaoIdNomeTermo() {
     }
 
+    public RelacaoIdNomeTermo(Termo termo) {
+        this.setIdTermo(termo.getId());
+        this.setQtdTermos(0);
+        this.setProximo(-1);
+    }
+
     public RelacaoIdNomeTermo(int id, int idTermo, int qtdTermos, int[] idsNomesOcorrencias) {
         this.setId(id);
         this.setIdTermo(idTermo);
@@ -101,8 +107,10 @@ public class RelacaoIdNomeTermo implements Registro {
         this.proximo = entrada.readInt();
     }
 
-    // concatenarIds(): método para concatenar a lista de ids de ocorrências em uma
-    // String de modo a armazená-los no arquivo correspondente.
+    /*
+     * Método concatenarIds(): método para concatenar a lista de ids de ocorrências
+     * em uma String de modo a armazená-los no arquivo correspondente.
+     */
     private String concatenarIds() {
         String ids = "";
 
@@ -117,8 +125,11 @@ public class RelacaoIdNomeTermo implements Registro {
         return ids;
     }
 
-    // segregarIds(String ids): método para segregar os ids retornados do arquivo
-    // correspondente, que é retornado em forma de String separados por vírgula
+    /*
+     * Método segregarIds(String ids): método para segregar os ids retornados do
+     * arquivo correspondente, que é retornado em forma de String separados por
+     * vírgula
+     */
     private int[] segregarIds(String ids) {
         String[] idsSegregadosString = ids.split(",");
         int[] idsSegregadosInt = new int[idsSegregadosString.length];

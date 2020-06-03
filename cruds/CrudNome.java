@@ -13,7 +13,10 @@ public class CrudNome {
 
     private static Arquivo<Nome> arquivoNomes;
 
-    public CrudNome() {
+    private static CrudTermo crudTermo;
+
+    public CrudNome(CrudTermo ct) {
+        crudTermo = ct;
         this.inicializarBaseDados();
     }
 
@@ -28,7 +31,7 @@ public class CrudNome {
             // se não existirem, são criados
             arquivoNomes = new Arquivo<>(Nome.class.getConstructor(), "nomes.db");
         } catch (Exception e) {
-            System.err.println("Não foi possível inicializar a base de dados dos grupos.");
+            System.err.println("Não foi possível inicializar a base de dados dos nomes.");
             e.printStackTrace();
         }
     }
@@ -48,7 +51,12 @@ public class CrudNome {
             if (confirmacao == 'S') {
                 try {
                     Nome objetoNome = new Nome(nome);
-                    arquivoNomes.incluir(objetoNome);
+
+                    int idInserido = arquivoNomes.incluir(objetoNome);
+                    objetoNome.setId(idInserido);
+
+                    crudTermo.incluirTermos(objetoNome);
+                    
                     Util.mensagemSucessoCadastro();
                 } catch (Exception e) {
                     Util.mensagemErroCadastro();

@@ -38,13 +38,13 @@ public class Arquivo<T extends Registro> {
 
         arquivo.seek(arquivo.length());
         long endereco = arquivo.getFilePointer();
-        obj.setID(ultimoID);
+        obj.setId(ultimoID);
         arquivo.writeByte(' '); // lápide
         byte[] byteArray = obj.toByteArray();
         arquivo.writeInt(byteArray.length);
         arquivo.write(byteArray); // inclui o registro
         indice.insere(ultimoID, endereco);
-        return obj.getID();
+        return obj.getId();
     }
 
     public Object[] listar() throws Exception {
@@ -82,23 +82,35 @@ public class Arquivo<T extends Registro> {
             byteArray = new byte[s];
             arquivo.read(byteArray);
             obj.fromByteArray(byteArray);
-            if (lapide == ' ' && obj.getID() == id)
+            if (lapide == ' ' && obj.getId() == id)
                 return obj;
         }
         return null;
     }
 
-    public ChaveSecundariaUsuario buscarChaveSecundariaUsuario(String chaveSecundaria) throws Exception {
+    public Object buscar(String termo) throws Exception {
         Object[] itens = this.listar();
 
         for (int i = 0; i < itens.length; i++) {
-            ChaveSecundariaUsuario item = (ChaveSecundariaUsuario) itens[i];
-            if (item.getEmail().equals(chaveSecundaria)) {
-                return item;
+            if (((Termo) itens[i]).getTermo().equals(termo)) {
+                return itens[i];
             }
         }
 
         return null;
+    }
+
+    public Object buscarPeloTermoId(int termoId) throws Exception {
+        Object[] itens = this.listar();
+        Object ultimoRegistroDisponivel = null;
+
+        for (int i = 0; i < itens.length; i++) {
+            if (((RelacaoIdNomeTermo) itens[i]).getIdTermo() == termoId) {
+                ultimoRegistroDisponivel = itens[i];
+            }
+        }
+
+        return ultimoRegistroDisponivel;
     }
 
     public boolean excluir(int id) throws Exception {
@@ -118,7 +130,7 @@ public class Arquivo<T extends Registro> {
         int s;
         T objetoEncontrado;
 
-        long endereco = indice.busca(obj.getID());
+        long endereco = indice.busca(obj.getId());
         if (endereco != -1) {
             objetoEncontrado = construtor.newInstance();
             arquivo.seek(endereco);
@@ -127,16 +139,16 @@ public class Arquivo<T extends Registro> {
             byteArray = new byte[s];
             arquivo.read(byteArray);
             objetoEncontrado.fromByteArray(byteArray);
-            if (lapide == ' ' && objetoEncontrado.getID() == obj.getID()) { // encontrou o registro
-                excluir(objetoEncontrado.getID()); // apaga o registro existente
+            if (lapide == ' ' && objetoEncontrado.getId() == obj.getId()) { // encontrou o registro
+                excluir(objetoEncontrado.getId()); // apaga o registro existente
                 arquivo.seek(arquivo.length());
                 endereco = arquivo.getFilePointer();
-                obj.setID(obj.getID());
+                obj.setId(obj.getId());
                 arquivo.writeByte(' '); // lápide nova
                 byteArray = obj.toByteArray();
                 arquivo.writeInt(byteArray.length);
                 arquivo.write(byteArray); // escreve o registro antigo atualizado, com o mesmo ID
-                indice.insere(obj.getID(), endereco);
+                indice.insere(obj.getId(), endereco);
                 return true;
             }
         }
