@@ -9,6 +9,7 @@ public class RelacaoIdNomeTermo implements Registro {
     // registro; caso apareça mais que 10 registros, a propriedade "proximo" indica
     // o id do registro que continua o armazenamento das ocorrências.
     private int[] idsNomesOcorrencias;
+    private String idsNomesOcorrenciasString;
     private int proximo; // caso existam mais que 10 registros, esta propriedade indica o id do proximo
     // registro que possui a continuação da listagem dos ids de nomes que possuem o
     // termo indicado; -1 indica que NÃO existe uma continuação do arquivo.
@@ -28,13 +29,15 @@ public class RelacaoIdNomeTermo implements Registro {
         this.setQtdTermos(qtdTermos);
         this.setIdsNomesOcorrencias(idsNomesOcorrencias);
         this.setProximo(-1);
+        this.idsNomesOcorrenciasString = concatenarIds();
     }
-
+    
     public RelacaoIdNomeTermo(int idTermo, int qtdTermos, int[] idsNomesOcorrencias) {
         this.setIdTermo(idTermo);
         this.setQtdTermos(qtdTermos);
         this.setIdsNomesOcorrencias(idsNomesOcorrencias);
         this.setProximo(-1);
+        this.idsNomesOcorrenciasString = concatenarIds();
     }
 
     public int getIdTermo() {
@@ -59,6 +62,7 @@ public class RelacaoIdNomeTermo implements Registro {
 
     public void setIdsNomesOcorrencias(int[] idsNomesOcorrencias) {
         this.idsNomesOcorrencias = idsNomesOcorrencias;
+        this.idsNomesOcorrenciasString = this.concatenarIds();
     }
 
     public int getProximo() {
@@ -97,14 +101,19 @@ public class RelacaoIdNomeTermo implements Registro {
     }
 
     @Override
-    public void fromByteArray(byte[] ba) throws IOException {
-        final ByteArrayInputStream dados = new ByteArrayInputStream(ba);
-        final DataInputStream entrada = new DataInputStream(dados);
-        this.id = entrada.readInt();
-        this.idTermo = entrada.readInt();
-        this.qtdTermos = entrada.readInt();
-        this.idsNomesOcorrencias = this.segregarIds(entrada.readUTF());
-        this.proximo = entrada.readInt();
+    public void fromByteArray(byte[] ba) {
+        try {
+            final ByteArrayInputStream dados = new ByteArrayInputStream(ba);
+            final DataInputStream entrada = new DataInputStream(dados);
+            this.id = entrada.readInt();
+            this.idTermo = entrada.readInt();
+            this.qtdTermos = entrada.readInt();
+            this.idsNomesOcorrenciasString = entrada.readUTF();
+            this.proximo = entrada.readInt();
+            this.idsNomesOcorrencias = this.segregarIds(this.idsNomesOcorrenciasString);
+        } catch (Exception e) {
+            System.out.println("Erro");
+        }
     }
 
     /*
@@ -119,7 +128,7 @@ public class RelacaoIdNomeTermo implements Registro {
                 ids += this.idsNomesOcorrencias[i] + ",";
             }
             // remove a última vírgula e retorna a String com os ids concatenados
-            ids = ids.substring(0, ids.length() - 2);
+            ids = ids.substring(0, ids.length() - 1);
         }
 
         return ids;
@@ -131,15 +140,18 @@ public class RelacaoIdNomeTermo implements Registro {
      * vírgula
      */
     private int[] segregarIds(String ids) {
-        String[] idsSegregadosString = ids.split(",");
-        int[] idsSegregadosInt = new int[idsSegregadosString.length];
-
-        for (int i = 0; i < idsSegregadosString.length; i++) {
-            if (!idsSegregadosString[i].isEmpty()) {
-                idsSegregadosInt[i] = Integer.parseInt(idsSegregadosString[i]);
+        int[] idsSegregadosInt;
+        if (ids.isEmpty()) {
+            idsSegregadosInt = new int[0];
+        } else {
+            String[] idsSegregadosString = ids.split(",");
+            idsSegregadosInt = new int[idsSegregadosString.length];
+            for (int i = 0; i < idsSegregadosString.length; i++) {
+                if (!idsSegregadosString[i].isEmpty()) {
+                    idsSegregadosInt[i] = Integer.parseInt(idsSegregadosString[i]);
+                }
             }
         }
-
         return idsSegregadosInt;
     }
 }

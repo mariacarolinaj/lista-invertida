@@ -1,6 +1,11 @@
 package cruds;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import entidades.Nome;
 import entidades.RelacaoIdNomeTermo;
@@ -44,10 +49,14 @@ public class CrudTermo {
                 // for uma stop word
                 if (!termo.isEmpty() && !isStopWord(termo)) {
                     Termo objetoTermo = obterDadosTermo(termo);
-                    RelacaoIdNomeTermo relacaoIdNomeTermo = (RelacaoIdNomeTermo) arquivoRelacaoIdNomesETermos
+                    ArrayList<RelacaoIdNomeTermo> resultadoBuscaTermoId = arquivoRelacaoIdNomesETermos
                             .buscarPeloTermoId(objetoTermo.getId());
 
+                    // obtem o ultimo registro (supostamente com espaço ainda) da lista de
+                    // associações de termoId com nomesIds
+                    RelacaoIdNomeTermo relacaoIdNomeTermo = resultadoBuscaTermoId.get(0);
                     int quantidadeIdsJaArmazenados = relacaoIdNomeTermo.getQtdTermos();
+
                     if (quantidadeIdsJaArmazenados < 10) {
                         int[] nomesIds = inserirNovoValor(relacaoIdNomeTermo.getIdsNomesOcorrencias(), nome.getId());
                         relacaoIdNomeTermo.setIdsNomesOcorrencias(nomesIds);
@@ -105,7 +114,7 @@ public class CrudTermo {
         Termo objetoTermo = (Termo) arquivoTermos.buscar(termo);
 
         if (objetoTermo == null) {
-            objetoTermo = new Termo(termo);
+            objetoTermo = new Termo(removerAcentos(termo.toLowerCase()));
             int idTermoInserido = arquivoTermos.incluir(objetoTermo);
             objetoTermo.setId(idTermoInserido);
 
@@ -135,5 +144,82 @@ public class CrudTermo {
         }
 
         return ehStopWord;
+    }
+
+    public ArrayList<Integer> obterNomeIdsEmBuscaPorTermos(ArrayList<String> termos) throws Exception {
+        ArrayList<Termo> termosExistentes = obterDadosTermosExistentes(termos);
+        ArrayList<ArrayList<Integer>> listaNomesIdsPorTermo = new ArrayList<ArrayList<Integer>>();
+
+        for (Termo termo : termosExistentes) {
+            ArrayList<RelacaoIdNomeTermo> relacaoIdNomeTermosExistentes = arquivoRelacaoIdNomesETermos
+                    .buscarPeloTermoId(termo.getId());
+            if (!relacaoIdNomeTermosExistentes.isEmpty()) {
+                /*
+                 * junta todos os ids de nomes relacionados a um termo específico em um só vetor
+                 * devido ao fato de que os registros do arquivo de RelacaoIdNomeTermo armazenam
+                 * apenas 10 ids em cada um. Nesse ponto não é relevante saber a qual termo
+                 * aquela lista de ids pertence, mas sim que cada vetor de inteiros pertencem a
+                 * um termo em espeficio apenas.
+                 */
+
+                ArrayList<Integer> ids = new ArrayList<Integer>();
+                for (RelacaoIdNomeTermo relacaoIds : relacaoIdNomeTermosExistentes) {
+                    for (int id : relacaoIds.getIdsNomesOcorrencias()) {
+                        ids.add(id);
+                    }
+                }
+                listaNomesIdsPorTermo.add(ids);
+            } else {
+                System.out.println("\nUm dos termos inseridos não está presente em nenhum dos nomes cadastrados.");
+                return null;
+            }
+        }
+
+        return obtemIdsComunsATodasAsListas(listaNomesIdsPorTermo);
+    }
+
+    /*
+     * Método obtemIdsComunsATodasAsListas: verifica em todas as sublistas de
+     * listaNomesIdsPorTermo se eles possuem os mesmos nomesIds da primeira; dessa
+     * forma são filtrados os ids apenas dos nomes que estão presentes em todas as
+     * listas de todos os termos da busca
+     */
+    private ArrayList<Integer> obtemIdsComunsATodasAsListas(ArrayList<ArrayList<Integer>> listaNomesIdsPorTermo) {
+        ArrayList<Integer> resultadoBusca = new ArrayList<Integer>();
+
+        if (!listaNomesIdsPorTermo.isEmpty()) {
+            ArrayList<Integer> arrayReferencia = listaNomesIdsPorTermo.get(0);
+            for (int i = 0; i < arrayReferencia.size(); i++) {
+                boolean contemIdAtualEmTodasAsListas = true;
+                for (int j = 1; j < listaNomesIdsPorTermo.size() && contemIdAtualEmTodasAsListas; j++) {
+                    if (!listaNomesIdsPorTermo.get(j).contains(arrayReferencia.get(i))) {
+                        contemIdAtualEmTodasAsListas = false;
+                    }
+                }
+                if (contemIdAtualEmTodasAsListas) {
+                    resultadoBusca.add(arrayReferencia.get(i));
+                }
+            }
+        }
+        return resultadoBusca;
+    }
+
+    /*
+     * Método obterDadosTermosExistentes(ArrayList<String> termos): a partir de uma
+     * lista de Strings busca no arquivo de termos se já fora cadastrada alguma
+     * palavra com o termo informado. Em caso positivo, armazena os dados do termo
+     * em um array e o retorna para o método anterior.
+     */
+    private ArrayList<Termo> obterDadosTermosExistentes(ArrayList<String> termos) throws Exception {
+        ArrayList<Termo> termosExistentes = new ArrayList<Termo>();
+
+        for (String termo : termos) {
+            Termo termoEncontrado = (Termo) arquivoTermos.buscar(removerAcentos(termo.toLowerCase()));
+            if (termoEncontrado != null) {
+                termosExistentes.add(termoEncontrado);
+            }
+        }
+
+        return termosExistentes;
     }
 }

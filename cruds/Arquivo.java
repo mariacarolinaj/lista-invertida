@@ -54,15 +54,20 @@ public class Arquivo<T extends Registro> {
         byte[] byteArray;
         int s;
         T obj;
-        while (arquivo.getFilePointer() < arquivo.length()) {
-            obj = construtor.newInstance();
-            lapide = arquivo.readByte();
-            s = arquivo.readInt();
-            byteArray = new byte[s];
-            arquivo.read(byteArray);
-            obj.fromByteArray(byteArray);
-            if (lapide == ' ')
-                lista.add(obj);
+        try {
+
+            while (arquivo.getFilePointer() < arquivo.length()) {
+                obj = construtor.newInstance();
+                lapide = arquivo.readByte();
+                s = arquivo.readInt();
+                byteArray = new byte[s];
+                arquivo.read(byteArray);
+                obj.fromByteArray(byteArray);
+                if (lapide == ' ')
+                    lista.add(obj);
+            }
+        } catch (Exception e) {
+            System.out.println("Erro");
         }
         return lista.toArray();
     }
@@ -100,17 +105,17 @@ public class Arquivo<T extends Registro> {
         return null;
     }
 
-    public Object buscarPeloTermoId(int termoId) throws Exception {
+    public ArrayList<RelacaoIdNomeTermo> buscarPeloTermoId(int termoId) throws Exception {
         Object[] itens = this.listar();
-        Object ultimoRegistroDisponivel = null;
+        ArrayList<RelacaoIdNomeTermo> registrosEncontrados = new ArrayList<RelacaoIdNomeTermo>();
 
         for (int i = 0; i < itens.length; i++) {
             if (((RelacaoIdNomeTermo) itens[i]).getIdTermo() == termoId) {
-                ultimoRegistroDisponivel = itens[i];
+                registrosEncontrados.add((RelacaoIdNomeTermo) itens[i]);
             }
         }
 
-        return ultimoRegistroDisponivel;
+        return registrosEncontrados;
     }
 
     public boolean excluir(int id) throws Exception {

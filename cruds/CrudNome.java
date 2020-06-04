@@ -1,8 +1,11 @@
 package cruds;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import entidades.Nome;
+import entidades.RelacaoIdNomeTermo;
 import util.Util;
 
 public class CrudNome {
@@ -73,12 +76,44 @@ public class CrudNome {
             System.out.println("*.*.*.*.*.* Listagem de Nomes *.*.*.*.*.*\n");
             for (int i = 0; i < nomes.length; i++) {
                 Nome nome = (Nome) nomes[i];
-                System.out.println((i + 1) + ". " + nome.getNome() + " - id: " + nome.getId());
+                System.out.println("\t- " + nome.getNome() + " (id: " + nome.getId() + ")");
             }
         } catch (Exception e) {
             System.out.println("Ocorreu um erro ao acessar a base de dados. Tente novamente.");
         }
 
+        Util.mensagemContinuar();
+    }
+
+    public void buscarPorTermos() throws Exception {
+        try {
+            System.out.println("*.*.*.*.*.* Busca através de termos *.*.*.*.*.*\n");
+            System.out.println("Informe os termos que deseja utilizar na busca, um por um, teclando enter entre eles.");
+            System.out.println("Deixe o campo de inserção em branco e tecle enter para realizar a pesquisa.\n");
+
+            String termoInserido;
+            ArrayList<String> termosBusca = new ArrayList<String>();
+            do {
+                System.out.print("> ");
+                termoInserido = br.readLine();
+                if (!termoInserido.isEmpty()) {
+                    termosBusca.add(termoInserido);
+                }
+            } while (!termoInserido.isEmpty());
+
+            ArrayList<Integer> nomesIds = crudTermo.obterNomeIdsEmBuscaPorTermos(termosBusca);
+            System.out.println();
+            
+            if (nomesIds != null && !nomesIds.isEmpty()) {
+                System.out.println("Foram encontrados os seguintes registros para os termos inseridos na busca:\n");
+                for (Integer id : nomesIds) {
+                    Nome nome = (Nome) arquivoNomes.buscar(id);
+                    System.out.println("\t- " + nome.getNome() + " (id: " + nome.getId() + ")");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Um erro inesperado ocorreu. Tente novamente.");
+        }
         Util.mensagemContinuar();
     }
 }

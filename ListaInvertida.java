@@ -47,6 +47,7 @@ public class ListaInvertida {
                     crudNome.listarNomes();
                     break;
                 case 3:
+                    crudNome.buscarPorTermos();
                     break;
                 default:
                     Util.mensagemTenteNovamente();
