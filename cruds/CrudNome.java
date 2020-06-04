@@ -74,10 +74,16 @@ public class CrudNome {
         try {
             Object[] nomes = arquivoNomes.listar();
             System.out.println("*.*.*.*.*.* Listagem de Nomes *.*.*.*.*.*\n");
-            for (int i = 0; i < nomes.length; i++) {
-                Nome nome = (Nome) nomes[i];
-                System.out.println("\t- " + nome.getNome() + " (id: " + nome.getId() + ")");
+            if (nomes.length > 0) {
+
+                for (int i = 0; i < nomes.length; i++) {
+                    Nome nome = (Nome) nomes[i];
+                    System.out.println("\t- " + nome.getNome() + " (id: " + nome.getId() + ")");
+                }
+            } else {
+                System.out.println("Ainda não foi cadastrado nenhum nome.");
             }
+
         } catch (Exception e) {
             System.out.println("Ocorreu um erro ao acessar a base de dados. Tente novamente.");
         }
@@ -103,13 +109,15 @@ public class CrudNome {
 
             ArrayList<Integer> nomesIds = crudTermo.obterNomeIdsEmBuscaPorTermos(termosBusca);
             System.out.println();
-            
+
             if (nomesIds != null && !nomesIds.isEmpty()) {
                 System.out.println("Foram encontrados os seguintes registros para os termos inseridos na busca:\n");
                 for (Integer id : nomesIds) {
                     Nome nome = (Nome) arquivoNomes.buscar(id);
                     System.out.println("\t- " + nome.getNome() + " (id: " + nome.getId() + ")");
                 }
+            } else {
+                System.out.println("Não foi encontrado nenhum registro compatível com os termos inseridos na busca.");
             }
         } catch (Exception e) {
             System.out.println("Um erro inesperado ocorreu. Tente novamente.");

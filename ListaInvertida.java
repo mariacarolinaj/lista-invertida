@@ -25,7 +25,6 @@ public class ListaInvertida {
     private static void exibirMenu() throws Exception {
         int opcao;
         do {
-
             System.out.println("*.*.*.*.*.* Lista Invertida *.*.*.*.*.*\n");
             System.out.println("1: Cadastrar novo nome");
             System.out.println("2: Listar nomes cadastrados");
