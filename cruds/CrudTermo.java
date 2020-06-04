@@ -146,7 +146,7 @@ public class CrudTermo {
         return ehStopWord;
     }
 
-    public ArrayList<Integer> obterNomeIdsEmBuscaPorTermos(ArrayList<String> termos) throws Exception {
+    public ArrayList<Integer> obterNomeIdsEmBuscaPorTermos(String[] termos) throws Exception {
         ArrayList<Termo> termosExistentes = obterDadosTermosExistentes(termos);
         ArrayList<ArrayList<Integer>> listaNomesIdsPorTermo = new ArrayList<ArrayList<Integer>>();
 
@@ -210,13 +210,16 @@ public class CrudTermo {
      * palavra com o termo informado. Em caso positivo, armazena os dados do termo
      * em um array e o retorna para o método anterior.
      */
-    private ArrayList<Termo> obterDadosTermosExistentes(ArrayList<String> termos) throws Exception {
+    private ArrayList<Termo> obterDadosTermosExistentes(String[] termos) throws Exception {
         ArrayList<Termo> termosExistentes = new ArrayList<Termo>();
 
         for (String termo : termos) {
-            Termo termoEncontrado = (Termo) arquivoTermos.buscar(removerAcentos(termo.toLowerCase()));
-            if (termoEncontrado != null) {
-                termosExistentes.add(termoEncontrado);
+            termo = removerAcentos(termo.toLowerCase());
+            if (!isStopWord(termo)) {
+                Termo termoEncontrado = (Termo) arquivoTermos.buscar(termo);
+                if (termoEncontrado != null) {
+                    termosExistentes.add(termoEncontrado);
+                }
             }
         }
 

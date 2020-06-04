@@ -94,19 +94,13 @@ public class CrudNome {
     public void buscarPorTermos() throws Exception {
         try {
             System.out.println("*.*.*.*.*.* Busca através de termos *.*.*.*.*.*\n");
-            System.out.println("Informe os termos que deseja utilizar na busca, um por um, teclando enter entre eles.");
-            System.out.println("Deixe o campo de inserção em branco e tecle enter para realizar a pesquisa.\n");
+            System.out.println("Informe os termos que deseja utilizar na busca:");
 
             String termoInserido;
-            ArrayList<String> termosBusca = new ArrayList<String>();
-            do {
-                System.out.print("> ");
-                termoInserido = br.readLine();
-                if (!termoInserido.isEmpty()) {
-                    termosBusca.add(termoInserido);
-                }
-            } while (!termoInserido.isEmpty());
-
+            System.out.print("> ");
+            termoInserido = br.readLine();
+            
+            String[] termosBusca = termoInserido.split(" ");
             ArrayList<Integer> nomesIds = crudTermo.obterNomeIdsEmBuscaPorTermos(termosBusca);
             System.out.println();
 
